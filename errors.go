@@ -126,6 +126,8 @@ type FieldError interface {
 
 	// Error returns the FieldError's message
 	Error() string
+
+	Err() error
 }
 
 // compile time interface checks
@@ -225,4 +227,8 @@ func (fe *fieldError) Error() string {
 	}
 
 	return fmt.Sprintf(fieldErrMsg, fe.ns, fe.Field(), fe.tag)
+}
+
+func (fe *fieldError) Err() error {
+	return fe.err
 }
