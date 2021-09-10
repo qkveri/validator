@@ -157,27 +157,27 @@ func (v *Validate) RegisterTagNameFunc(fn TagNameFunc) {
 // NOTES:
 // - if the key already exists, the previous validation function will be replaced.
 // - this method is not thread-safe it is intended that these all be registered prior to any validation
-func (v *Validate) RegisterValidation(tag string, fn Func, callValidationEvenIfNull ...bool) error {
-	return v.RegisterValidationCtx(tag, wrapFunc(fn), callValidationEvenIfNull...)
+func (v *Validate) RegisterValidation(tag string, fn Func, callValidationEvenIfNull ...bool) {
+	v.RegisterValidationCtx(tag, wrapFunc(fn), callValidationEvenIfNull...)
 }
 
 // RegisterValidationCtx does the same as RegisterValidation on accepts a FuncCtx validation
 // allowing context.Context validation support.
-func (v *Validate) RegisterValidationCtx(tag string, fn FuncCtx, callValidationEvenIfNull ...bool) error {
+func (v *Validate) RegisterValidationCtx(tag string, fn FuncCtx, callValidationEvenIfNull ...bool) {
 	var nilCheckable bool
 	if len(callValidationEvenIfNull) > 0 {
 		nilCheckable = callValidationEvenIfNull[0]
 	}
-	return v.registerValidation(tag, fn, false, nilCheckable)
+	v.registerValidation(tag, fn, false, nilCheckable)
 }
 
-func (v *Validate) registerValidation(tag string, fn FuncCtx, bakedIn bool, nilCheckable bool) error {
+func (v *Validate) registerValidation(tag string, fn FuncCtx, bakedIn bool, nilCheckable bool) {
 	if len(tag) == 0 {
-		return errors.New("function Key cannot be empty")
+		panic("function Key cannot be empty")
 	}
 
 	if fn == nil {
-		return errors.New("function cannot be empty")
+		panic("function cannot be empty")
 	}
 
 	_, ok := restrictedTags[tag]
@@ -185,7 +185,6 @@ func (v *Validate) registerValidation(tag string, fn FuncCtx, bakedIn bool, nilC
 		panic(fmt.Sprintf(restrictedTagErr, tag))
 	}
 	v.validations[tag] = internalValidationFuncWrapper{fn: fn, runValidatinOnNil: nilCheckable}
-	return nil
 }
 
 // RegisterAlias registers a mapping of a single validation tag that
