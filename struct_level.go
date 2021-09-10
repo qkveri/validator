@@ -52,7 +52,7 @@ type StructLevel interface {
 	//
 	// tag can be an existing validation tag or just something you make up
 	// and process on the flip side it's up to you.
-	ReportError(field interface{}, fieldName, structFieldName string, tag, param string)
+	ReportError(field interface{}, fieldName, structFieldName string, tag, param string, err error)
 
 	// ReportValidationErrors reports an error just by passing ValidationErrors
 	//
@@ -106,7 +106,7 @@ func (v *validate) ExtractType(field reflect.Value) (reflect.Value, reflect.Kind
 }
 
 // ReportError reports an error just by passing the field and tag information
-func (v *validate) ReportError(field interface{}, fieldName, structFieldName, tag, param string) {
+func (v *validate) ReportError(field interface{}, fieldName, structFieldName, tag, param string, err error) {
 
 	fv, kind, _ := v.extractTypeInternal(reflect.ValueOf(field), false)
 
@@ -135,6 +135,7 @@ func (v *validate) ReportError(field interface{}, fieldName, structFieldName, ta
 				structfieldLen: uint8(len(structFieldName)),
 				param:          param,
 				kind:           kind,
+				err:            err,
 			},
 		)
 		return
@@ -153,6 +154,7 @@ func (v *validate) ReportError(field interface{}, fieldName, structFieldName, ta
 			param:          param,
 			kind:           kind,
 			typ:            fv.Type(),
+			err:            err,
 		},
 	)
 }
